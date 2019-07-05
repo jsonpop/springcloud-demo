@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 @EnableAuthorizationServer
 @Configuration
@@ -23,13 +24,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     /*@Autowired
     private AuthenticationManager authenticationManager;*/
 
-    /*@Override
+    @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security
-                .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
-                .allowFormAuthenticationForClients();
-    }*/
+        security.tokenKeyAccess("permitAll()");
+        security.tokenKeyAccess("isAuthenticated()");
+    }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -54,5 +53,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * 生成JTW token
+     *
+     * @return
+     */
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setSigningKey("123456");
+        return converter;
     }
 }
