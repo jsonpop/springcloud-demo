@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -38,7 +39,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("test")
-                .secret(new BCryptPasswordEncoder().encode("123456"))
+                .secret(passwordEncoder().encode("123456"))
                 .authorizedGrantTypes("password", "authorization_code", "client_credentials", "implicit", "refresh_token")
                 .scopes("all", "read", "write")
                 .autoApprove(true);
@@ -49,7 +50,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         endpoints.authenticationManager(authenticationManager)
                 .tokenStore(tokenStore())
                 .accessTokenConverter(jwtAccessTokenConverter())
-                .userDetailsService(new UserDetailServiceImpl());
+                .userDetailsService(userDetailsService);
     }
 
     @Bean
@@ -68,5 +69,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey("123456");
         return converter;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
