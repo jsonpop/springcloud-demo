@@ -15,7 +15,7 @@ public class BrankAController {
     }
 
     @GetMapping("/transAccount")
-    public String transferAccounts(@RequestParam(name = "money") int money) {
-        return brankAService.transferAccounts(money);
+    public String transferAccounts(@RequestParam(name = "money") int money, @RequestParam(name = "aid") String aid) {
+        return brankAService.transferAccounts(money, aid);
     }
 }
