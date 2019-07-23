@@ -1,13 +1,15 @@
 server:
   port: 8410
 spring:
+  application:
+    name: branka-service
   profiles:
     active: dev
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/branka?characterEncoding=UTF-8
     username: root
-    password: root2019..
+    password: Iamapig0.0
 
 eureka:
   client:

@@ -22,6 +22,7 @@ public class BrankAServiceImpl implements BrankAService {
     public String transferAccounts(int money, String aid) {
         brankBClient.subMoney(money, aid);
         int count = brankAMapper.addMoney(money, aid);
+        int i = 1 / 0;
         return count > 0 ? "success" : "error";
     }
 }
