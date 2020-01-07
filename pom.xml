@@ -10,6 +10,9 @@
 
     <modules>
         <module>springcloud-auth</module>
+        <module>springcloud-transaction</module>
+        <module>springcloud-gateway</module>
+        <module>springcloud-lock</module>
     </modules>
 
 </project>

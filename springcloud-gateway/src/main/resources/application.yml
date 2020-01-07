@@ -1,0 +1,30 @@
+server:
+  port: 8111
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/branka?characterEncoding=UTF-8
+    username: root
+    password: Iamapig0.0
+  cloud:
+    gateway:
+      routes:
+        - id: baidu
+          uri: https://www.baidu.com
+          predicates:
+            - Path=/Test
+#开启端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka.didispace.com/eureka/
+    instance:
+      instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${server.port}

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * description 用户信息验证
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service("userDetailService")
 public class UserDetailServiceImpl implements UserDetailsService {
 
+    @Transactional(noRollbackFor = Exception.class)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //UserVO userVO = macUserMapper.loadUserByUsername(username);
