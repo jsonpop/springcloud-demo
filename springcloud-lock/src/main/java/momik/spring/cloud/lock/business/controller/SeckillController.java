@@ -23,4 +23,9 @@ public class SeckillController {
         return true;
         /*return seckillService.buy2();*/
     }
+
+    @RequestMapping("/buy3")
+    public boolean buy3() {
+        return seckillService.buy3();
+    }
 }

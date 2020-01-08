@@ -4,25 +4,25 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
 import java.util.UUID;
 
 @Component
 @ConditionalOnClass(RedisTemplate.class)
 public class RedisLockFactory {
 
-    private static RedisTemplate redisTemplate;
+    private static StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        RedisLockFactory.redisTemplate = redisTemplate;
+    public void setRedisTemplate(StringRedisTemplate stringRedisTemplate) {
+        RedisLockFactory.stringRedisTemplate = stringRedisTemplate;
     }
 
     public static RedisLock createLock(String key) {
         RedisLock redisLock = RedisLock.builder()
-                .redisTemplate(redisTemplate)
+                .stringRedisTemplate(stringRedisTemplate)
                 .lockKey(key)
                 .requestId(UUID.randomUUID().toString())
                 .needThreadDelay(false)

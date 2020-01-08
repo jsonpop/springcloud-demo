@@ -6,6 +6,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.util.StringUtils;
 
@@ -34,7 +35,7 @@ public class RedisLock implements Lock {
     }
 
     private static final String LOCKKEY_PREFIX = "RedisLock:";
-    private RedisTemplate<String, String> redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
     /**
      * 锁主键
      */
@@ -66,26 +67,22 @@ public class RedisLock implements Lock {
 
     @Override
     public void lock() {
-        lock = redisTemplate.execute((RedisConnection redisConnection) -> {
-            long endTime = System.currentTimeMillis() + retryTimes;
-            while (endTime > System.currentTimeMillis()) {
-                log.info("{}尝试获取锁",requestId);
-                boolean flag = redisConnection.set(lockKey.getBytes(), requestId.getBytes(), Expiration.milliseconds(expire), RedisStringCommands.SetOption.SET_IF_ABSENT);
-                if (flag) {
-                    log.info("{}获取锁成功",requestId);
-                    return true;
-                }
-                if (needThreadDelay) {
-                    try {
-                        Thread.sleep(threadDelay);
-                    } catch (InterruptedException e) {
-                        log.error("", e);
-                        Thread.currentThread().interrupt();
-                    }
+        long endTime = System.currentTimeMillis() + retryTimes;
+        while (endTime > System.currentTimeMillis()) {
+            boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(lockKey, requestId, expire, TimeUnit.MILLISECONDS);
+            if (flag) {
+                lock = true;
+                break;
+            }
+            if (needThreadDelay) {
+                try {
+                    Thread.sleep(threadDelay);
+                } catch (InterruptedException e) {
+                    log.error("", e);
+                    Thread.currentThread().interrupt();
                 }
             }
-            return false;
-        });
+        }
     }
 
     @Override
@@ -105,7 +102,7 @@ public class RedisLock implements Lock {
 
     @Override
     public void unlock() {
-        redisTemplate.execute((RedisConnection redisConnection) -> redisConnection.scriptingCommands().eval(UNLOCK_LUA.getBytes(), ReturnType.BOOLEAN, 1, lockKey.getBytes(), requestId.getBytes()));
+        stringRedisTemplate.execute((RedisConnection redisConnection) -> redisConnection.scriptingCommands().eval(UNLOCK_LUA.getBytes(), ReturnType.BOOLEAN, 1, lockKey.getBytes(), requestId.getBytes()));
         lock = false;
     }
 
